@@ -1,34 +1,40 @@
 export default class Character {
     constructor(name, type, attack, defence, health) {
-        const types = ['Bowman', 'Swordsman', 'Magician', 'Daemon', 'Undead', 'Zombie'];
-
-        if (typeof name !== 'string' || name.length < 2 || name.length > 10) {
-            throw new Error('Имя должно быть строкой от 2 до 10 символов.');
-        }
-  
-        if (!types.includes(type)) {
-            throw new Error(`Некорректный тип персонажа: ${type}.`);
-        }
-  
         this.name = name;
         this.type = type;
         this.level = 1;
         this.health = health;
         this.attack = attack;
         this.defence = defence;
+        this._stoned = false
     }
-  
-    levelUp() {
-        if (this.health === 0) {
-            throw new Error('Нельзя повысить уровень мертвого персонажа.');
+
+    set stoned(value) {
+        if (typeof value !== 'boolean') {
+            throw new Error('Некорректное значение для наложения/снятия дурмана.');
         }
-        this.level += 1;
-        this.health = 100;
-        this.attack = Math.round(this.attack * 1.2);
-        this.defence = Math.round(this.defence * 1.2);
+        this._stoned = value;
+
+    }
+
+    get stoned() {
+        return this._stoned;
+    }
+
+    rangeCoefficient(range=1) {
+        range = Math.min(range, 5);
+        const linearFactor = 1 - (range - 1) * 0.1;
+
+        if (!this.stoned) {
+            return linearFactor;
+        }
+        const penalty = Math.log2(range) * 5;
+        return linearFactor - penalty / 100;
     }
   
-    damage(points) {
+    damage(points, range) {
+        points *= this.rangeCoefficient(range);
+
         if (this.health > 0) {
             this.health -= points * (1 - this.defence / 100);
             console.log("Проверка: здоровье после урона =", this.health)

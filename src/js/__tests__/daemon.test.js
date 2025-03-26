@@ -9,5 +9,6 @@ test('creation of Daemon character', () => {
         level: 1,
         attack: 10,
         defence: 40,
+        _stoned: false
     });
 });
