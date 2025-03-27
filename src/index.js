@@ -20,4 +20,4 @@ const data = [
 
 for (const item of data) {
     console.log(item[0], item[1], canIterate(item[0]));
-};
+}
